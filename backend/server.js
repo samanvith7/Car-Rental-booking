@@ -82,7 +82,7 @@ app.post("/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log("LOGIN:", email);
+    console.log("LOGIN:", email, password);
 
     const result = await pool.query(
       "SELECT * FROM users WHERE email=$1",
@@ -95,22 +95,20 @@ app.post("/auth/login", async (req, res) => {
 
     const user = result.rows[0];
 
+    console.log("DB password:", user.password);
+
     const valid = await bcrypt.compare(password, user.password);
+
+    console.log("Password match:", valid);
 
     if (!valid) {
       return res.status(400).json({ message: "Invalid password" });
     }
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      "secret",
-      { expiresIn: "1d" }
-    );
+    const token = jwt.sign({ id: user.id }, "secret");
 
-    // ✅ IMPORTANT RESPONSE FORMAT
     res.json({
-      success: true,
-      token: token,
+      token,
       user: {
         id: user.id,
         name: user.name,
