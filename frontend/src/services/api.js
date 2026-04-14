@@ -34,7 +34,7 @@ export default api;
 // CARS (WORKING)
 // =====================
 export const getCars = () => api.get("/cars");
-
+export const getCar = (id) => api.get(`/cars/${id}`);
 // =====================
 // AUTH (WORKING)
 // =====================
