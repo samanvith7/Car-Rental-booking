@@ -27,10 +27,23 @@ app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
+
+
 app.get('/', (req, res) => res.json({ message: 'Car Rental API is running' }));
 
 app.use(notFound);
 app.use(errorHandler);
+
+const pool = require("./db"); // make sure db.js exists
+
+app.get("/cars", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM cars");
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
